@@ -11,35 +11,59 @@ let operator;
 let displayValue = "";
 
 // FUNCTIONS
-const add = (x, y) => x + y;
-const subtract = (x, y) => x - y;
-const multiply = (x, y) => x * y;
-const divide = (x, y) => x / y;
+// handle decimals better
+const add = (x, y) => (x + y).toFixed(2);
+const subtract = (x, y) => (x - y).toFixed(2);
+const multiply = (x, y) => (x * y).toFixed(2);
+const divide = (x, y) => (x / y).toFixed(2);
 
-const showOnScreen = (e) => {
+const setDisplay = (e) => {
   // show the content of the button on the display
   displayValue += e.target.innerText;
+  showResult();
+};
+
+const showResult = () => {
   display.innerText = displayValue;
 };
 
-const calculate = (operator, firstNum, secondNum) => {
+const calculate = () => {
+  // convert division symbol to /
+  const operators = ["+", "-", "x", "/"];
+  const operatorIndex = displayValue
+    .split("")
+    .findIndex((char) => operators.includes(char));
+
+  const firstNum = +displayValue.slice(0, operatorIndex);
+  const secondNum = +displayValue.slice(operatorIndex + 1);
+  const operator = displayValue[operatorIndex];
+
   switch (operator) {
     case "+":
-      return add(firstNum, secondNum);
+      displayValue = add(firstNum, secondNum);
+      break;
     case "-":
-      return subtract(firstNum, secondNum);
-    case "*":
-      return multiply(firstNum, secondNum);
+      displayValue = subtract(firstNum, secondNum);
+      break;
+    case "x":
+      displayValue = multiply(firstNum, secondNum);
+      break;
     case "/":
-      return divide(firstNum, secondNum);
+      displayValue = divide(firstNum, secondNum);
+      break;
   }
+
+  showResult();
 };
 
-const clear = () => {};
+const clear = () => {
+  displayValue = "";
+  display.innerText = "";
+};
 
 // EVENT LISTENERS
 buttons.forEach((button) => {
-  button.addEventListener("click", showOnScreen);
+  button.addEventListener("click", setDisplay);
 });
 enterButton.addEventListener("click", calculate);
 clearButton.addEventListener("click", clear);
