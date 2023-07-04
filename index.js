@@ -17,7 +17,7 @@ const add = (x, y) => {
   if (!isDecimal(x) && !isDecimal(y)) {
     return x + y;
   } else {
-    return (x + y).toFixed(2);
+    return parseFloat(x + y);
   }
 };
 
@@ -25,7 +25,7 @@ const subtract = (x, y) => {
   if (!isDecimal(x) && !isDecimal(y)) {
     return x - y;
   } else {
-    return (x - y).toFixed(2);
+    return parseFloat(x - y);
   }
 };
 
@@ -33,7 +33,7 @@ const multiply = (x, y) => {
   if (!isDecimal(x) && !isDecimal(y)) {
     return x * y;
   } else {
-    return (x * y).toFixed(2);
+    return parseFloat(x * y);
   }
 };
 
@@ -41,12 +41,11 @@ const divide = (x, y) => {
   if (!isDecimal(x) && !isDecimal(y)) {
     return x / y;
   } else {
-    return (x / y).toFixed(2);
+    return parseFloat(x / y);
   }
 };
 
 const setDisplay = (e) => {
-  // show the content of the button on the display
   displayValue += e.target.innerText;
   showResult();
 };
@@ -56,7 +55,7 @@ const showResult = () => {
 };
 
 const calculate = () => {
-  // convert division symbol to /
+  // convert division symbol to /?
   const operators = ["+", "-", "x", "/"];
   const operatorIndex = displayValue
     .split("")
@@ -69,7 +68,6 @@ const calculate = () => {
   switch (operator) {
     case "+":
       displayValue = add(firstNum, secondNum);
-      console.log(displayValue);
       break;
     case "-":
       displayValue = subtract(firstNum, secondNum);
