@@ -43,9 +43,13 @@ body {
   border: 1px solid black;
 }
 
-.result {
-  font-size: 6.5rem;
+.display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 6rem;
   margin: 0 1rem 0 0;
+  height: 7.5rem;
 }
 
 .buttons {
