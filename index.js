@@ -5,17 +5,45 @@ const enterButton = document.querySelector(".enter-button");
 const clearButton = document.querySelector(".clear-button");
 
 // VARIABLES
-let firstNum;
-let secondNum;
-let operator;
 let displayValue = "";
 
 // FUNCTIONS
 // handle decimals better
-const add = (x, y) => (x + y).toFixed(2);
-const subtract = (x, y) => (x - y).toFixed(2);
-const multiply = (x, y) => (x * y).toFixed(2);
-const divide = (x, y) => (x / y).toFixed(2);
+const isDecimal = (num) => {
+  return num % 1 !== 0;
+};
+
+const add = (x, y) => {
+  if (!isDecimal(x) && !isDecimal(y)) {
+    return x + y;
+  } else {
+    return (x + y).toFixed(2);
+  }
+};
+
+const subtract = (x, y) => {
+  if (!isDecimal(x) && !isDecimal(y)) {
+    return x - y;
+  } else {
+    return (x - y).toFixed(2);
+  }
+};
+
+const multiply = (x, y) => {
+  if (!isDecimal(x) && !isDecimal(y)) {
+    return x * y;
+  } else {
+    return (x * y).toFixed(2);
+  }
+};
+
+const divide = (x, y) => {
+  if (!isDecimal(x) && !isDecimal(y)) {
+    return x / y;
+  } else {
+    return (x / y).toFixed(2);
+  }
+};
 
 const setDisplay = (e) => {
   // show the content of the button on the display
@@ -41,6 +69,7 @@ const calculate = () => {
   switch (operator) {
     case "+":
       displayValue = add(firstNum, secondNum);
+      console.log(displayValue);
       break;
     case "-":
       displayValue = subtract(firstNum, secondNum);
