@@ -32,6 +32,7 @@ body {
   margin: 2rem;
   flex-direction: column;
   gap: 1rem;
+  max-width: 26rem;
 }
 
 .screen {
@@ -47,11 +48,12 @@ body {
 .display {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   font-size: 6rem;
   font-family: "Roboto", sans-serif;
   margin: 0 1rem 0 0;
   height: 7.5rem;
+  overflow: hidden;
 }
 
 .buttons {
