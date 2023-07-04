@@ -17,7 +17,7 @@ const add = (x, y) => {
   if (!isDecimal(x) && !isDecimal(y)) {
     return x + y;
   } else {
-    return parseFloat(x + y);
+    return parseFloat(x + y).toFixed(2);
   }
 };
 
@@ -25,7 +25,7 @@ const subtract = (x, y) => {
   if (!isDecimal(x) && !isDecimal(y)) {
     return x - y;
   } else {
-    return parseFloat(x - y);
+    return parseFloat(x - y).toFixed(2);
   }
 };
 
@@ -33,7 +33,7 @@ const multiply = (x, y) => {
   if (!isDecimal(x) && !isDecimal(y)) {
     return x * y;
   } else {
-    return parseFloat(x * y);
+    return parseFloat(x * y).toFixed(2);
   }
 };
 
@@ -41,7 +41,7 @@ const divide = (x, y) => {
   if (!isDecimal(x) && !isDecimal(y)) {
     return x / y;
   } else {
-    return parseFloat(x / y);
+    return parseFloat(x / y).toFixed(2);
   }
 };
 
