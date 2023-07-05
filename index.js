@@ -13,7 +13,6 @@ const operators = ["+", "-", "x", "/"];
 let displayValue = "";
 
 // FUNCTIONS
-// handle decimals better
 const isDecimal = (num) => {
   return num % 1 !== 0;
 };
@@ -59,7 +58,12 @@ const findOperatorIndex = () => {
 };
 
 const setDisplay = (e) => {
-  const displayValueParts = extractDisplayValueParts();
+  const operatorIndex = findOperatorIndex();
+  if (operatorIndex === -1 || !e.target.className.includes("operator")) {
+    displayValue += e.target.innerText;
+  }
+
+  const displayValueParts = extractDisplayValueParts(operatorIndex);
   const { firstNum, secondNum, operator } = displayValueParts;
   if (
     firstNum &&
@@ -69,9 +73,9 @@ const setDisplay = (e) => {
   ) {
     clearDisplay();
     calculate();
+    displayValue += e.target.innerText;
   }
 
-  displayValue += e.target.innerText;
   showResult();
 };
 
@@ -79,32 +83,38 @@ const showResult = () => {
   display.innerText = displayValue;
 };
 
-const extractDisplayValueParts = () => {
-  const operatorIndex = findOperatorIndex();
+const extractDisplayValueParts = (operatorIndex) => {
   return {
-    firstNum: +displayValue.slice(0, operatorIndex),
-    secondNum: +displayValue.slice(operatorIndex + 1),
-    operator: displayValue[operatorIndex],
+    firstNum:
+      displayValue.slice() === ""
+        ? undefined
+        : operatorIndex === -1
+        ? displayValue.slice()
+        : displayValue.slice(0, operatorIndex),
+    secondNum:
+      operatorIndex === -1 ? undefined : displayValue.slice(operatorIndex + 1),
+    operator: operatorIndex === -1 ? undefined : displayValue[operatorIndex],
   };
 };
 
 const calculate = () => {
   // convert division symbol to /?
-  const displayValueParts = extractDisplayValueParts();
+  const operatorIndex = findOperatorIndex();
+  const displayValueParts = extractDisplayValueParts(operatorIndex);
   const { firstNum, secondNum, operator } = displayValueParts;
 
   switch (operator) {
     case "+":
-      displayValue = add(firstNum, secondNum).toString();
+      displayValue = add(+firstNum, +secondNum).toString();
       break;
     case "-":
-      displayValue = subtract(firstNum, secondNum).toString();
+      displayValue = subtract(+firstNum, +secondNum).toString();
       break;
     case "x":
-      displayValue = multiply(firstNum, secondNum).toString();
+      displayValue = multiply(+firstNum, +secondNum).toString();
       break;
     case "/":
-      displayValue = divide(firstNum, secondNum).toString();
+      displayValue = divide(+firstNum, +secondNum).toString();
       break;
   }
 
