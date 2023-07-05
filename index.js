@@ -1,10 +1,15 @@
 // ELEMENTS
 const display = document.querySelector(".display");
-const buttons = document.querySelectorAll(".buttons button");
-const enterButton = document.querySelector(".enter-button");
-const clearButton = document.querySelector(".clear-button");
+const operatorButtons = document.querySelectorAll(".operator");
+const decimalButton = document.querySelector(".decimal");
+const numberButtons = document.querySelectorAll(".number");
+const buttons = [...operatorButtons, decimalButton, ...numberButtons];
+
+const enterButton = document.querySelector(".enter");
+const clearButton = document.querySelector(".clear");
 
 // VARIABLES
+const operators = ["+", "-", "x", "/"];
 let displayValue = "";
 
 // FUNCTIONS
@@ -17,7 +22,7 @@ const add = (x, y) => {
   if (!isDecimal(x) && !isDecimal(y)) {
     return x + y;
   } else {
-    return parseFloat(x + y).toFixed(2);
+    return parseFloat((x + y).toFixed(2));
   }
 };
 
@@ -25,7 +30,7 @@ const subtract = (x, y) => {
   if (!isDecimal(x) && !isDecimal(y)) {
     return x - y;
   } else {
-    return parseFloat(x - y).toFixed(2);
+    return parseFloat((x - y).toFixed(2));
   }
 };
 
@@ -33,7 +38,7 @@ const multiply = (x, y) => {
   if (!isDecimal(x) && !isDecimal(y)) {
     return x * y;
   } else {
-    return parseFloat(x * y).toFixed(2);
+    return parseFloat((x * y).toFixed(2));
   }
 };
 
@@ -41,11 +46,31 @@ const divide = (x, y) => {
   if (!isDecimal(x) && !isDecimal(y)) {
     return x / y;
   } else {
-    return parseFloat(x / y).toFixed(2);
+    return parseFloat((x / y).toFixed(2));
   }
 };
 
+const findOperatorIndex = () => {
+  const operatorIndex = displayValue
+    .split("")
+    .findIndex((char) => operators.includes(char));
+
+  return operatorIndex;
+};
+
 const setDisplay = (e) => {
+  const displayValueParts = extractDisplayValueParts();
+  const { firstNum, secondNum, operator } = displayValueParts;
+  if (
+    firstNum &&
+    operator &&
+    secondNum &&
+    e.target.className.includes("operator")
+  ) {
+    clearDisplay();
+    calculate();
+  }
+
   displayValue += e.target.innerText;
   showResult();
 };
@@ -54,37 +79,44 @@ const showResult = () => {
   display.innerText = displayValue;
 };
 
+const extractDisplayValueParts = () => {
+  const operatorIndex = findOperatorIndex();
+  return {
+    firstNum: +displayValue.slice(0, operatorIndex),
+    secondNum: +displayValue.slice(operatorIndex + 1),
+    operator: displayValue[operatorIndex],
+  };
+};
+
 const calculate = () => {
   // convert division symbol to /?
-  const operators = ["+", "-", "x", "/"];
-  const operatorIndex = displayValue
-    .split("")
-    .findIndex((char) => operators.includes(char));
-
-  const firstNum = +displayValue.slice(0, operatorIndex);
-  const secondNum = +displayValue.slice(operatorIndex + 1);
-  const operator = displayValue[operatorIndex];
+  const displayValueParts = extractDisplayValueParts();
+  const { firstNum, secondNum, operator } = displayValueParts;
 
   switch (operator) {
     case "+":
-      displayValue = add(firstNum, secondNum);
+      displayValue = add(firstNum, secondNum).toString();
       break;
     case "-":
-      displayValue = subtract(firstNum, secondNum);
+      displayValue = subtract(firstNum, secondNum).toString();
       break;
     case "x":
-      displayValue = multiply(firstNum, secondNum);
+      displayValue = multiply(firstNum, secondNum).toString();
       break;
     case "/":
-      displayValue = divide(firstNum, secondNum);
+      displayValue = divide(firstNum, secondNum).toString();
       break;
   }
 
   showResult();
 };
 
-const clear = () => {
+const reset = () => {
+  clearDisplay();
   displayValue = "";
+};
+
+const clearDisplay = () => {
   display.innerText = "";
 };
 
@@ -93,4 +125,4 @@ buttons.forEach((button) => {
   button.addEventListener("click", setDisplay);
 });
 enterButton.addEventListener("click", calculate);
-clearButton.addEventListener("click", clear);
+clearButton.addEventListener("click", reset);
