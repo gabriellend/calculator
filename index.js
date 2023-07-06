@@ -3,13 +3,14 @@ const display = document.querySelector(".display");
 const operatorButtons = document.querySelectorAll(".operator");
 const decimalButton = document.querySelector(".decimal");
 const numberButtons = document.querySelectorAll(".number");
-const buttons = [...operatorButtons, decimalButton, ...numberButtons];
+// const buttons = [...operatorButtons, decimalButton, ...numberButtons];
 
 const enterButton = document.querySelector(".enter");
 const clearButton = document.querySelector(".clear");
 
 // VARIABLES
 const operators = ["+", "-", "x", "/"];
+let currentValue = "";
 let displayValue = "";
 
 // FUNCTIONS
