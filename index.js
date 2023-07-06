@@ -85,15 +85,11 @@ const showResult = () => {
 
 const extractDisplayValueParts = (operatorIndex) => {
   return {
-    firstNum:
-      displayValue.slice() === ""
-        ? undefined
-        : operatorIndex === -1
-        ? displayValue.slice()
-        : displayValue.slice(0, operatorIndex),
-    secondNum:
-      operatorIndex === -1 ? undefined : displayValue.slice(operatorIndex + 1),
-    operator: operatorIndex === -1 ? undefined : displayValue[operatorIndex],
+    firstNum: displayValue.slice(0, operatorIndex),
+    secondNum: displayValue.slice(operatorIndex + 1),
+    operator: displayValue[operatorIndex],
+  };
+};
   };
 };
 
