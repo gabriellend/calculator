@@ -4,13 +4,15 @@ const operatorButtons = document.querySelectorAll(".operator");
 const decimalButton = document.querySelector(".decimal");
 const numberButtons = document.querySelectorAll(".number");
 
-const enterButton = document.querySelector(".enter");
+const equalButton = document.querySelector(".equal");
+const undoButton = document.querySelector(".undo");
 const clearButton = document.querySelector(".clear");
 
 // VARIABLES
 const operators = ["+", "-", "x", "/"];
 const regex =
   /^(?!.*\.\.)(?!.*\.\d+\.)(?!.*-[x\/+])(?!.*\.[-x\/+])(?!-{2})-?(\.?\d*|\d*\.?\d*)[-+x\/]?-?(\.?\d*|\d*\.?\d*)$/;
+// currentValue tracks the potential displayValue while we do some checks
 let currentValue = "";
 let displayValue = "";
 
@@ -63,10 +65,6 @@ const getOperatorIndex = () => {
   return operatorIndex;
 };
 
-const showResult = () => {
-  display.innerText = displayValue;
-};
-
 const getDisplayValueParts = (operatorIndex) => {
   return {
     firstNum: displayValue.slice(0, operatorIndex),
@@ -77,8 +75,6 @@ const getDisplayValueParts = (operatorIndex) => {
 
 const handleOperator = (e) => {
   const incomingOperator = e.target.innerText;
-  // currentValue tracks the potential displayValue while
-  // we do some checks
   currentValue = displayValue + incomingOperator;
 
   // If displayValue is "", this is the first button pressed.
@@ -112,7 +108,9 @@ const handleOperator = (e) => {
 
 const handleNumber = (e) => {
   const incomingNumber = e.target.innerText;
+  currentValue = displayValue + incomingNumber;
   displayValue += incomingNumber;
+
   showResult();
 };
 
@@ -159,6 +157,23 @@ const clearDisplay = () => {
   display.innerText = 0;
 };
 
+const showResult = () => {
+  display.innerText = displayValue;
+};
+
+const undo = () => {
+  const currentValueArray = currentValue.split("");
+  currentValueArray.pop();
+  currentValue = currentValueArray.join("");
+  if (currentValue === "") {
+    reset();
+  } else {
+    displayValue = currentValueArray.join("");
+
+    showResult();
+  }
+};
+
 // EVENT LISTENERS
 operatorButtons.forEach((button) => {
   button.addEventListener("click", handleOperator);
@@ -167,5 +182,6 @@ numberButtons.forEach((button) => {
   button.addEventListener("click", handleNumber);
 });
 decimalButton.addEventListener("click", handleDecimal);
-enterButton.addEventListener("click", calculate);
+equalButton.addEventListener("click", calculate);
+undoButton.addEventListener("click", undo);
 clearButton.addEventListener("click", reset);
