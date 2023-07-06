@@ -141,6 +141,7 @@ const calculate = () => {
 const reset = () => {
   clearDisplay();
   displayValue = "";
+  currentValue = "";
 };
 
 const clearDisplay = () => {
