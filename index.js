@@ -46,7 +46,9 @@ const multiply = (x, y) => {
 };
 
 const divide = (x, y) => {
-  if (!isDecimal(x) && !isDecimal(y)) {
+  if (y === 0) {
+    return "Don't even";
+  } else if (!isDecimal(x) && !isDecimal(y)) {
     return x / y;
   } else {
     return parseFloat((x / y).toFixed(2));
