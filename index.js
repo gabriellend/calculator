@@ -130,20 +130,21 @@ const calculate = () => {
   const operatorIndex = getOperatorIndex();
   const displayValueParts = getDisplayValueParts(operatorIndex);
   const { firstNum, secondNum, operator } = displayValueParts;
-
-  switch (operator) {
-    case "+":
-      displayValue = add(+firstNum, +secondNum).toString();
-      break;
-    case "-":
-      displayValue = subtract(+firstNum, +secondNum).toString();
-      break;
-    case "x":
-      displayValue = multiply(+firstNum, +secondNum).toString();
-      break;
-    case "/":
-      displayValue = divide(+firstNum, +secondNum).toString();
-      break;
+  if (firstNum && secondNum && operator) {
+    switch (operator) {
+      case "+":
+        displayValue = add(+firstNum, +secondNum).toString();
+        break;
+      case "-":
+        displayValue = subtract(+firstNum, +secondNum).toString();
+        break;
+      case "x":
+        displayValue = multiply(+firstNum, +secondNum).toString();
+        break;
+      case "/":
+        displayValue = divide(+firstNum, +secondNum).toString();
+        break;
+    }
   }
 
   showResult();
