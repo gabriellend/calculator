@@ -10,7 +10,7 @@ const clearButton = document.querySelector(".clear");
 // VARIABLES
 const operators = ["+", "-", "x", "/"];
 const regex =
-  /^(?!.*\.\.)(?!.*\.\d+\.)(?!.*\-[+x\/])-?(\.?\d*|\d*\.?\d*)[-+x\/]?-?(\.?\d*|\d*\.?\d*)$/;
+  /^(?!.*\.\.)(?!.*\.\d+\.)(?!.*\\(-|\.)[+x\/])-?(\.?\d*|\d*\.?\d*)[-+x\/]?-?(\.?\d*|\d*\.?\d*)$/;
 let currentValue = "";
 let displayValue = "";
 
@@ -76,25 +76,23 @@ const getDisplayValueParts = (operatorIndex) => {
 };
 
 const handleOperator = (e) => {
-  const incomingValue = e.target.innerText;
-  currentValue = displayValue + e.target.innerText;
+  const incomingOperator = e.target.innerText;
+  currentValue = displayValue + incomingOperator;
 
   if (displayValue === "") {
-    if (e.target.innerText === "-") {
-      displayValue += incomingValue;
+    if (incomingOperator === "-") {
+      displayValue += incomingOperator;
     } else {
       clearDisplay();
       return;
     }
   } else if (displayValue !== "" && regex.test(currentValue)) {
-    displayValue += incomingValue;
+    displayValue += incomingOperator;
   } else {
-    for (char of operators) {
-      if (currentValue[currentValue.length - 1] === char) {
-        clearDisplay();
-        calculate();
-        displayValue += incomingValue;
-      }
+    if (isNaN(currentValue[currentValue.length - 1])) {
+      clearDisplay();
+      calculate();
+      displayValue += incomingOperator;
     }
   }
 
@@ -102,14 +100,16 @@ const handleOperator = (e) => {
 };
 
 const handleNumber = (e) => {
-  displayValue += e.target.innerText;
+  const incomingNumber = e.target.innerText;
+  displayValue += incomingNumber;
   showResult();
 };
 
 const handleDecimal = (e) => {
-  currentValue = displayValue + e.target.innerText;
+  const incomingDecimal = e.target.innerText;
+  currentValue = displayValue + incomingDecimal;
   if (regex.test(currentValue)) {
-    displayValue += e.target.innerText;
+    displayValue += incomingDecimal;
   }
   showResult();
 };
