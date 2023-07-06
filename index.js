@@ -145,7 +145,7 @@ const reset = () => {
 };
 
 const clearDisplay = () => {
-  display.innerText = "";
+  display.innerText = 0;
 };
 
 // EVENT LISTENERS
