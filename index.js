@@ -90,7 +90,29 @@ const extractDisplayValueParts = (operatorIndex) => {
     operator: displayValue[operatorIndex],
   };
 };
+
+const handleOperator = (e) => {
+  const regex = /^-?\.?\d+\.?\d*[+\-x\/]?-?\.?\d*\.?\d*$/;
+  const incomingValue = e.target.innerText;
+  currentValue = displayValue + e.target.innerText;
+
+  if (displayValue === "" && e.target.innerText === "-") {
+    displayValue += incomingValue;
+  } else if (displayValue !== "" && regex.test(currentValue)) {
+    displayValue += incomingValue;
+  }
+
+  showResult();
+};
+
+const handleNumber = (e) => {
+  displayValue += e.target.innerText;
+  showResult();
   };
+
+const handleDecimal = (e) => {
+  displayValue += e.target.innerText;
+  showResult();
 };
 
 const calculate = () => {
@@ -127,8 +149,16 @@ const clearDisplay = () => {
 };
 
 // EVENT LISTENERS
-buttons.forEach((button) => {
-  button.addEventListener("click", setDisplay);
+// buttons.forEach((button) => {
+//   button.addEventListener("click", setDisplay);
+// });
+
+operatorButtons.forEach((button) => {
+  button.addEventListener("click", handleOperator);
 });
+numberButtons.forEach((button) => {
+  button.addEventListener("click", handleNumber);
+});
+decimalButton.addEventListener("click", handleDecimal);
 enterButton.addEventListener("click", calculate);
 clearButton.addEventListener("click", reset);
