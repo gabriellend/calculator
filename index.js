@@ -50,9 +50,13 @@ const divide = (x, y) => {
 };
 
 const findOperatorIndex = () => {
-  const operatorIndex = displayValue
-    .split("")
-    .findIndex((char) => operators.includes(char));
+  const operatorIndex = displayValue.split("").findIndex((char, i) => {
+    // Skip the first index, it will either be "-", in which case we don't
+    // want to include it, or a number.
+    if (i !== 0) {
+      return operators.includes(char);
+    }
+  });
 
   return operatorIndex;
 };
