@@ -10,7 +10,7 @@ const clearButton = document.querySelector(".clear");
 // VARIABLES
 const operators = ["+", "-", "x", "/"];
 const regex =
-  /^(?!.*\.\.)(?!.*\.\d+\.)(?!.*\\(-|\.)[+x\/])-?(\.?\d*|\d*\.?\d*)[-+x\/]?-?(\.?\d*|\d*\.?\d*)$/;
+  /^(?!.*\.\.)(?!.*\.\d+\.)(?!.*-[x\/+])(?!.*\.[-x\/+])(?!-{2})-?(\.?\d*|\d*\.?\d*)[-+x\/]?-?(\.?\d*|\d*\.?\d*)$/;
 let currentValue = "";
 let displayValue = "";
 
@@ -89,7 +89,10 @@ const handleOperator = (e) => {
   } else if (displayValue !== "" && regex.test(currentValue)) {
     displayValue += incomingOperator;
   } else {
-    if (isNaN(currentValue[currentValue.length - 1])) {
+    if (
+      isNaN(currentValue[currentValue.length - 1]) &&
+      !isNaN(currentValue[currentValue.length - 2])
+    ) {
       clearDisplay();
       calculate();
       displayValue += incomingOperator;
