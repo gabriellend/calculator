@@ -54,7 +54,7 @@ const divide = (x, y) => {
 const getOperatorIndex = () => {
   const operatorIndex = currentValue.split("").findIndex((char, i) => {
     // Skip the first index, it will either be "-", in which case we don't
-    // want to include it, or a number.
+    // want to include it, or a number
     if (i !== 0) {
       return operators.includes(char);
     }
