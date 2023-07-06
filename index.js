@@ -3,6 +3,7 @@ const display = document.querySelector(".display");
 const operatorButtons = document.querySelectorAll(".operator");
 const decimalButton = document.querySelector(".decimal");
 const numberButtons = document.querySelectorAll(".number");
+const buttons = [...operatorButtons, decimalButton, ...numberButtons];
 
 const equalButton = document.querySelector(".equal");
 const undoButton = document.querySelector(".undo");
@@ -75,6 +76,16 @@ const getDisplayValueParts = (operatorIndex) => {
   };
 };
 
+const handleButton = (e) => {
+  if (e.target.className.includes("operator")) {
+    handleOperator(e);
+  } else if (e.target.className.includes("number")) {
+    handleNumber(e);
+  } else {
+    handleDecimal(e);
+  }
+};
+
 const handleOperator = (e) => {
   const incomingOperator = e.target.innerText;
   currentValue = displayValue + incomingOperator;
@@ -122,6 +133,7 @@ const handleDecimal = (e) => {
   if (regex.test(currentValue)) {
     displayValue += incomingDecimal;
   }
+
   showResult();
 };
 
@@ -176,15 +188,15 @@ const undo = () => {
     showResult();
   }
 };
-
+// +  -  x   /
+// 1 2 3  AC
+// 4 5 6  undo
+// 7 8 9  =
+// 0 . +/-
 // EVENT LISTENERS
-operatorButtons.forEach((button) => {
-  button.addEventListener("click", handleOperator);
+buttons.forEach((button) => {
+  button.addEventListener("click", handleButton);
 });
-numberButtons.forEach((button) => {
-  button.addEventListener("click", handleNumber);
-});
-decimalButton.addEventListener("click", handleDecimal);
 equalButton.addEventListener("click", calculate);
 undoButton.addEventListener("click", undo);
 clearButton.addEventListener("click", reset);
