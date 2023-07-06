@@ -10,7 +10,7 @@ const clearButton = document.querySelector(".clear");
 // VARIABLES
 const operators = ["+", "-", "x", "/"];
 const regex =
-  /^-?(?!.*\.\.)(?!.*\.\d+\.)(\.?\d*|\d*\.?\d*)[-+x\/]?-?(\.?\d*|\d*\.?\d*)$/;
+  /^(?!.*\.\.)(?!.*\.\d+\.)(?!.*\-[+x\/])-?(\.?\d*|\d*\.?\d*)[-+x\/]?-?(\.?\d*|\d*\.?\d*)$/;
 let currentValue = "";
 let displayValue = "";
 
@@ -51,8 +51,8 @@ const divide = (x, y) => {
   }
 };
 
-const findOperatorIndex = () => {
-  const operatorIndex = displayValue.split("").findIndex((char, i) => {
+const getOperatorIndex = () => {
+  const operatorIndex = currentValue.split("").findIndex((char, i) => {
     // Skip the first index, it will either be "-", in which case we don't
     // want to include it, or a number.
     if (i !== 0) {
@@ -67,7 +67,7 @@ const showResult = () => {
   display.innerText = displayValue;
 };
 
-const extractDisplayValueParts = (operatorIndex) => {
+const getDisplayValueParts = (operatorIndex) => {
   return {
     firstNum: displayValue.slice(0, operatorIndex),
     secondNum: displayValue.slice(operatorIndex + 1),
@@ -79,10 +79,23 @@ const handleOperator = (e) => {
   const incomingValue = e.target.innerText;
   currentValue = displayValue + e.target.innerText;
 
-  if (displayValue === "" && e.target.innerText === "-") {
-    displayValue += incomingValue;
+  if (displayValue === "") {
+    if (e.target.innerText === "-") {
+      displayValue += incomingValue;
+    } else {
+      clearDisplay();
+      return;
+    }
   } else if (displayValue !== "" && regex.test(currentValue)) {
     displayValue += incomingValue;
+  } else {
+    for (char of operators) {
+      if (currentValue[currentValue.length - 1] === char) {
+        clearDisplay();
+        calculate();
+        displayValue += incomingValue;
+      }
+    }
   }
 
   showResult();
@@ -103,8 +116,8 @@ const handleDecimal = (e) => {
 
 const calculate = () => {
   // convert division symbol to /?
-  const operatorIndex = findOperatorIndex();
-  const displayValueParts = extractDisplayValueParts(operatorIndex);
+  const operatorIndex = getOperatorIndex();
+  const displayValueParts = getDisplayValueParts(operatorIndex);
   const { firstNum, secondNum, operator } = displayValueParts;
 
   switch (operator) {
@@ -135,10 +148,6 @@ const clearDisplay = () => {
 };
 
 // EVENT LISTENERS
-// buttons.forEach((button) => {
-//   button.addEventListener("click", setDisplay);
-// });
-
 operatorButtons.forEach((button) => {
   button.addEventListener("click", handleOperator);
 });
