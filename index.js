@@ -3,13 +3,14 @@ const display = document.querySelector(".display");
 const operatorButtons = document.querySelectorAll(".operator");
 const decimalButton = document.querySelector(".decimal");
 const numberButtons = document.querySelectorAll(".number");
-// const buttons = [...operatorButtons, decimalButton, ...numberButtons];
 
 const enterButton = document.querySelector(".enter");
 const clearButton = document.querySelector(".clear");
 
 // VARIABLES
 const operators = ["+", "-", "x", "/"];
+const regex =
+  /^-?(?!.*\.\.)(?!.*\.\d+\.)(\.?\d*|\d*\.?\d*)[-+x\/]?-?(\.?\d*|\d*\.?\d*)$/;
 let currentValue = "";
 let displayValue = "";
 
@@ -62,28 +63,6 @@ const findOperatorIndex = () => {
   return operatorIndex;
 };
 
-const setDisplay = (e) => {
-  const operatorIndex = findOperatorIndex();
-  if (operatorIndex === -1 || !e.target.className.includes("operator")) {
-    displayValue += e.target.innerText;
-  }
-
-  const displayValueParts = extractDisplayValueParts(operatorIndex);
-  const { firstNum, secondNum, operator } = displayValueParts;
-  if (
-    firstNum &&
-    operator &&
-    secondNum &&
-    e.target.className.includes("operator")
-  ) {
-    clearDisplay();
-    calculate();
-    displayValue += e.target.innerText;
-  }
-
-  showResult();
-};
-
 const showResult = () => {
   display.innerText = displayValue;
 };
@@ -97,7 +76,6 @@ const extractDisplayValueParts = (operatorIndex) => {
 };
 
 const handleOperator = (e) => {
-  const regex = /^-?\.?\d+\.?\d*[+\-x\/]?-?\.?\d*\.?\d*$/;
   const incomingValue = e.target.innerText;
   currentValue = displayValue + e.target.innerText;
 
@@ -113,10 +91,13 @@ const handleOperator = (e) => {
 const handleNumber = (e) => {
   displayValue += e.target.innerText;
   showResult();
-  };
+};
 
 const handleDecimal = (e) => {
-  displayValue += e.target.innerText;
+  currentValue = displayValue + e.target.innerText;
+  if (regex.test(currentValue)) {
+    displayValue += e.target.innerText;
+  }
   showResult();
 };
 
