@@ -77,8 +77,12 @@ const getDisplayValueParts = (operatorIndex) => {
 
 const handleOperator = (e) => {
   const incomingOperator = e.target.innerText;
+  // currentValue tracks the potential displayValue while
+  // we do some checks
   currentValue = displayValue + incomingOperator;
 
+  // If displayValue is "", this is the first button pressed.
+  // Only allow it to be "-", to handle negative numbers.
   if (displayValue === "") {
     if (incomingOperator === "-") {
       displayValue += incomingOperator;
@@ -89,6 +93,10 @@ const handleOperator = (e) => {
   } else if (displayValue !== "" && regex.test(currentValue)) {
     displayValue += incomingOperator;
   } else {
+    // If we have an expression that can be evaluated i.e.
+    // "2+1" and another operator is pressed, evaluate the
+    // current expression and set up the next expression
+    // with the result and incoming operator
     if (
       isNaN(currentValue[currentValue.length - 1]) &&
       !isNaN(currentValue[currentValue.length - 2])
