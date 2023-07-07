@@ -87,7 +87,14 @@ const handleButton = (e) => {
 };
 
 const handleOperator = (e) => {
-  const incomingOperator = e.target.innerText;
+  let incomingOperator;
+  if (e.target.innerText.length === 1) {
+    incomingOperator = e.target.innerText;
+  } else {
+    // This handles the "+/-" button. We only care about the "-".
+    incomingOperator = e.target.innerText[e.target.innerText.length - 1];
+  }
+
   currentValue = displayValue + incomingOperator;
 
   // If displayValue is "", this is the first button pressed.
@@ -142,7 +149,7 @@ const calculate = () => {
   const operatorIndex = getOperatorIndex();
   const displayValueParts = getDisplayValueParts(operatorIndex);
   const { firstNum, secondNum, operator } = displayValueParts;
-  if (firstNum && secondNum && operator) {
+  if (!isNaN(firstNum) && !isNaN(secondNum) && isNaN(operator)) {
     switch (operator) {
       case "+":
         displayValue = add(+firstNum, +secondNum).toString();
@@ -188,11 +195,7 @@ const undo = () => {
     showResult();
   }
 };
-// +  -  x   /
-// 1 2 3  AC
-// 4 5 6  undo
-// 7 8 9  =
-// 0 . +/-
+
 // EVENT LISTENERS
 buttons.forEach((button) => {
   button.addEventListener("click", handleButton);

@@ -91,6 +91,10 @@ body {
   background-color: #d4fde8;
 }
 
+.left-buttons .sign {
+  background-color: mintcream;
+}
+
 .right-buttons {
   flex: 1;
   display: flex;
