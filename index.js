@@ -89,7 +89,7 @@ const getOperatorIndex = () => {
     .split("")
     .findIndex((char, i, currentValue) => {
       // Skip the first index, it will either be "-", in which case we don't
-      // want to include it, or a number. Also skip a "+" if it comes after
+      // want to include it, or a number. Also skip a "+" or a "-" if it comes after
       // an "e", this denotes a long number, not an operator.
       if (i !== 0 && currentValue[i - 1] !== "e") {
         return operators.includes(char);
