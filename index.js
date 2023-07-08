@@ -1,21 +1,49 @@
 // ELEMENTS
+const screen = document.querySelector(".screen");
 const display = document.querySelector(".display");
-const operatorButtons = document.querySelectorAll(".operator");
 const decimalButton = document.querySelector(".decimal");
 const numberButtons = document.querySelectorAll(".number");
-const buttons = [...operatorButtons, decimalButton, ...numberButtons];
+const operatorButtons = document.querySelectorAll(".operator");
+const leftButtons = [...operatorButtons, decimalButton, ...numberButtons];
 
-const equalButton = document.querySelector(".equal");
 const undoButton = document.querySelector(".undo");
+const equalButton = document.querySelector(".equal");
 const clearButton = document.querySelector(".clear");
+const buttons = [...leftButtons, equalButton, undoButton, clearButton];
 
 // VARIABLES
-const operators = ["+", "-", "x", "/"];
-const regex =
-  /^(?!.*\.\.)(?!.*\.\d+\.)(?!.*-[x\/+])(?!.*\.[-x\/+])(?!-{2})-?(\.?\d*|\d*\.?\d*)[-+x\/]?-?(\.?\d*|\d*\.?\d*)$/;
 // currentValue tracks the potential displayValue while we do some checks
 let currentValue = "";
 let displayValue = "";
+const operators = ["+", "-", "x", "/"];
+// getComputedStyle returns px so we need to convert to rem
+const initialFontSize = `${
+  getComputedStyle(display).fontSize.slice(0, 4) / 16
+}rem`;
+
+const regex =
+  /^(?!.*\.\.)(?!.*\.\d+\.)(?!.*-[x\/+])(?!.*\.[-x\/+])(?!-{2})-?(\.?\d*|\d*\.?\d*)(?:e[-+]\d+)?[-+x\/]?-?(\.?\d*|\d*\.?\d*)$/;
+const fontSizeMap = {
+  9: "4.8rem",
+  10: "4.3rem",
+  11: "3.9rem",
+  12: "3.6rem",
+  13: "3.3rem",
+  14: "3.1rem",
+  15: "2.9rem",
+  16: "2.7rem",
+  17: "2.55rem",
+  18: "2.4rem",
+  19: "2.3rem",
+  20: "2.2rem",
+  21: "2.1rem",
+  22: "2rem",
+  23: "1.9rem",
+  24: "1.8rem",
+  25: "1.75rem",
+  26: "1.7rem",
+  27: "1.6rem",
+};
 
 // FUNCTIONS
 const isDecimal = (num) => {
@@ -57,13 +85,16 @@ const divide = (x, y) => {
 };
 
 const getOperatorIndex = () => {
-  const operatorIndex = currentValue.split("").findIndex((char, i) => {
-    // Skip the first index, it will either be "-", in which case we don't
-    // want to include it, or a number
-    if (i !== 0) {
-      return operators.includes(char);
-    }
-  });
+  const operatorIndex = currentValue
+    .split("")
+    .findIndex((char, i, currentValue) => {
+      // Skip the first index, it will either be "-", in which case we don't
+      // want to include it, or a number. Also skip a "+" if it comes after
+      // an "e", this denotes a long number, not an operator.
+      if (i !== 0 && currentValue[i - 1] !== "e") {
+        return operators.includes(char);
+      }
+    });
 
   return operatorIndex;
 };
@@ -144,11 +175,22 @@ const handleDecimal = (e) => {
   showResult();
 };
 
+const fitCharInScreen = () => {
+  if (displayValue.length <= 8) {
+    display.style.fontSize = initialFontSize;
+  } else if (displayValue.length in fontSizeMap) {
+    display.style.fontSize = fontSizeMap[displayValue.length];
+  } else {
+    display.style.fontSize = "1.5rem";
+  }
+};
+
 const calculate = () => {
   // convert division symbol to /?
   const operatorIndex = getOperatorIndex();
   const displayValueParts = getDisplayValueParts(operatorIndex);
   const { firstNum, secondNum, operator } = displayValueParts;
+
   if (!isNaN(firstNum) && !isNaN(secondNum) && isNaN(operator)) {
     switch (operator) {
       case "+":
@@ -197,9 +239,12 @@ const undo = () => {
 };
 
 // EVENT LISTENERS
-buttons.forEach((button) => {
+leftButtons.forEach((button) => {
   button.addEventListener("click", handleButton);
 });
 equalButton.addEventListener("click", calculate);
 undoButton.addEventListener("click", undo);
 clearButton.addEventListener("click", reset);
+buttons.forEach((button) => {
+  button.addEventListener("click", fitCharInScreen);
+});
