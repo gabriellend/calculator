@@ -187,6 +187,10 @@ const fitCharInScreen = () => {
 
 const calculate = () => {
   // convert division symbol to /?
+  if (displayValue === "") {
+    return;
+  }
+
   const operatorIndex = getOperatorIndex();
   const displayValueParts = getDisplayValueParts(operatorIndex);
   const { firstNum, secondNum, operator } = displayValueParts;
