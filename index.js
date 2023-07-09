@@ -9,7 +9,8 @@ const leftButtons = [...operatorButtons, decimalButton, ...numberButtons];
 const undoButton = document.querySelector(".undo");
 const equalButton = document.querySelector(".equal");
 const clearButton = document.querySelector(".clear");
-const buttons = [...leftButtons, equalButton, undoButton, clearButton];
+const rightButtons = [undoButton, equalButton, clearButton];
+const buttons = [...leftButtons, ...rightButtons];
 
 // VARIABLES
 // currentValue tracks the potential displayValue while we do some checks
@@ -22,7 +23,7 @@ const initialFontSize = `${
 }rem`;
 
 const regex =
-  /^(?!.*\.\.)(?!.*\.\d+\.)(?!.*-[x\/+])(?!.*\.[-x\/+])(?!-{2})-?(\.?\d*|\d*\.?\d*)(?:e[-+]\d+)?[-+x\/]?-?(\.?\d*|\d*\.?\d*)$/;
+  /^(?!.*\.\.)(?!.*\.\d+\.)(?!.*-[x\/+])(?!.*\.[-x\/+])(?!-{2})-?(?!00|0\d)(\.?\d*|\d*\.?\d*)(?:e[-+]\d+)?[-+x\/]?-?(?!00|0\d)(\.?\d*|\d*\.?\d*)$/;
 const fontSizeMap = {
   9: "4.8rem",
   10: "4.3rem",
@@ -54,7 +55,7 @@ const add = (x, y) => {
   if (!isDecimal(x) && !isDecimal(y)) {
     return x + y;
   } else {
-    return parseFloat((x + y).toFixed(2));
+    return parseFloat((x + y).toFixed(4));
   }
 };
 
@@ -62,7 +63,7 @@ const subtract = (x, y) => {
   if (!isDecimal(x) && !isDecimal(y)) {
     return x - y;
   } else {
-    return parseFloat((x - y).toFixed(2));
+    return parseFloat((x - y).toFixed(4));
   }
 };
 
@@ -70,7 +71,7 @@ const multiply = (x, y) => {
   if (!isDecimal(x) && !isDecimal(y)) {
     return x * y;
   } else {
-    return parseFloat((x * y).toFixed(2));
+    return parseFloat((x * y).toFixed(4));
   }
 };
 
@@ -80,7 +81,7 @@ const divide = (x, y) => {
   } else if (!isDecimal(x) && !isDecimal(y)) {
     return x / y;
   } else {
-    return parseFloat((x / y).toFixed(2));
+    return parseFloat((x / y).toFixed(4));
   }
 };
 
@@ -160,7 +161,21 @@ const handleOperator = (e) => {
 const handleNumber = (e) => {
   const incomingNumber = e.target.innerText;
   currentValue = displayValue + incomingNumber;
-  displayValue += incomingNumber;
+
+  if (currentValue === "00") {
+    currentValue = "0";
+    return;
+    // Prevents a string like "08" from displaying in the first expression.
+    // Would be nice to prevent this in the second half of the expression,
+    // a little tricky though.
+  } else if (currentValue[0] === "0" && !isNaN(currentValue[1])) {
+    currentValue = currentValue[currentValue.length - 1];
+    displayValue = "";
+  }
+
+  if (regex.test(currentValue)) {
+    displayValue += incomingNumber;
+  }
 
   showResult();
 };
