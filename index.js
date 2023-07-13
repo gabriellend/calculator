@@ -16,14 +16,13 @@ const buttons = [...leftButtons, ...rightButtons];
 // currentValue tracks the potential displayValue while we do some checks
 let currentValue = "";
 let displayValue = "";
-const operators = ["+", "-", "x", "/"];
+const operators = ["+", "-", "x", "\u00F7"];
 // getComputedStyle returns px so we need to convert to rem
-const initialFontSize = `${
+const initialDigitSize = `${
   getComputedStyle(display).fontSize.slice(0, 4) / 16
 }rem`;
-
 const regex =
-  /^(?!.*\.\.)(?!.*\.\d+\.)(?!.*-[x\/+])(?!.*\.[-x\/+])(?!-{2})-?(?!00|0\d)(\.?\d*|\d*\.?\d*)(?:e[-+]\d+)?[-+x\/]?-?(?!00|0\d)(\.?\d*|\d*\.?\d*)$/;
+  /^(?!.*\.\.)(?!.*\.\d+\.)(?!.*-[x\u00F7+])(?!.*\.[-x\u00F7+])(?!-{2})-?(?!00|0\d)(\.?\d*|\d*\.?\d*)(?:e[-+]\d+)?[-+x\u00F7]?-?(?!00|0\d)(\.?\d*|\d*\.?\d*)$/;
 const fontSizeMap = {
   9: "4.8rem",
   10: "4.3rem",
@@ -192,7 +191,7 @@ const handleDecimal = (e) => {
 
 const fitCharInScreen = () => {
   if (displayValue.length <= 8) {
-    display.style.fontSize = initialFontSize;
+    display.style.fontSize = initialDigitSize;
   } else if (displayValue.length in fontSizeMap) {
     display.style.fontSize = fontSizeMap[displayValue.length];
   } else {
@@ -201,7 +200,6 @@ const fitCharInScreen = () => {
 };
 
 const calculate = () => {
-  // convert division symbol to /?
   if (displayValue === "") {
     return;
   }
@@ -221,7 +219,7 @@ const calculate = () => {
       case "x":
         displayValue = multiply(+firstNum, +secondNum).toString();
         break;
-      case "/":
+      case "\u00F7":
         displayValue = divide(+firstNum, +secondNum).toString();
         break;
     }
