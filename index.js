@@ -1,28 +1,33 @@
 // ELEMENTS
 const screen = document.querySelector(".screen");
 const display = document.querySelector(".display");
+
 const decimalButton = document.querySelector(".decimal");
+const signButton = document.querySelector(".sign");
 const numberButtons = document.querySelectorAll(".number");
 const operatorButtons = document.querySelectorAll(".operator");
-const leftButtons = [...operatorButtons, decimalButton, ...numberButtons];
+const leftButtons = [
+  ...operatorButtons,
+  decimalButton,
+  signButton,
+  ...numberButtons,
+];
 
 const undoButton = document.querySelector(".undo");
 const equalButton = document.querySelector(".equal");
 const clearButton = document.querySelector(".clear");
 const rightButtons = [undoButton, equalButton, clearButton];
+
 const buttons = [...leftButtons, ...rightButtons];
 
 // VARIABLES
-// currentValue tracks the potential displayValue while we do some checks
-let currentValue = "";
-let displayValue = "";
-const operators = ["+", "-", "x", "\u00F7"];
+let firstNum = "";
+let operator = "";
+let secondNum = "";
 // getComputedStyle returns px so we need to convert to rem
 const initialDigitSize = `${
   getComputedStyle(display).fontSize.slice(0, 4) / 16
 }rem`;
-const regex =
-  /^(?!.*\.\.)(?!.*\.\d+\.)(?!.*-[x\u00F7+])(?!.*\.[-x\u00F7+])(?!-{2})-?(?!00|0\d)(\.?\d*|\d*\.?\d*)(?:e[-+]\d+)?[-+x\u00F7]?-?(?!00|0\d)(\.?\d*|\d*\.?\d*)$/;
 const fontSizeMap = {
   9: "4.8rem",
   10: "4.3rem",
@@ -84,112 +89,71 @@ const divide = (x, y) => {
   }
 };
 
-const getOperatorIndex = () => {
-  const operatorIndex = currentValue
-    .split("")
-    .findIndex((char, i, currentValue) => {
-      // Skip the first index, it will either be "-", in which case we don't
-      // want to include it, or a number. Also skip a "+" or a "-" if it comes after
-      // an "e", this denotes a long number, not an operator.
-      if (i !== 0 && currentValue[i - 1] !== "e") {
-        return operators.includes(char);
-      }
-    });
-
-  return operatorIndex;
-};
-
-const getDisplayValueParts = (operatorIndex) => {
-  return {
-    firstNum: displayValue.slice(0, operatorIndex),
-    secondNum: displayValue.slice(operatorIndex + 1),
-    operator: displayValue[operatorIndex],
-  };
-};
-
 const handleButton = (e) => {
   if (e.target.className.includes("operator")) {
     handleOperator(e);
   } else if (e.target.className.includes("number")) {
     handleNumber(e);
-  } else {
+  } else if (e.target.className.includes("decimal")) {
     handleDecimal(e);
+  } else if (e.target.className.includes("sign")) {
+    handleSign(e);
   }
 };
 
 const handleOperator = (e) => {
-  let incomingOperator;
-  if (e.target.innerText.length === 1) {
-    incomingOperator = e.target.innerText;
-  } else {
-    // This handles the "+/-" button. We only care about the "-".
-    incomingOperator = e.target.innerText[e.target.innerText.length - 1];
+  if (!isNaN(firstNum) && firstNum !== "" && !operator) {
+    operator = e.target.innerText;
+    display.innerText = firstNum + operator;
+  } else if (firstNum && operator && !isNaN(secondNum) && secondNum !== "") {
+    calculate();
+    operator = e.target.innerText;
+    display.innerText = firstNum + operator;
   }
-
-  currentValue = displayValue + incomingOperator;
-
-  // If displayValue is "", this is the first button pressed.
-  // Only allow it to be "-", to handle negative numbers.
-  if (displayValue === "") {
-    if (incomingOperator === "-") {
-      displayValue += incomingOperator;
-    } else {
-      clearDisplay();
-      return;
-    }
-  } else if (displayValue !== "" && regex.test(currentValue)) {
-    displayValue += incomingOperator;
-  } else {
-    // If we have an expression that can be evaluated i.e.
-    // "2+1" and another operator is pressed, evaluate the
-    // current expression and set up the next expression
-    // with the result and incoming operator
-    if (
-      isNaN(currentValue[currentValue.length - 1]) &&
-      !isNaN(currentValue[currentValue.length - 2])
-    ) {
-      clearDisplay();
-      calculate();
-      displayValue += incomingOperator;
-    }
-  }
-
-  showResult();
 };
 
 const handleNumber = (e) => {
-  const incomingNumber = e.target.innerText;
-  currentValue = displayValue + incomingNumber;
-
-  if (currentValue === "00") {
-    currentValue = "0";
-    return;
-    // Prevents a string like "08" from displaying in the first expression.
-    // Would be nice to prevent this in the second half of the expression,
-    // a little tricky though.
-  } else if (currentValue[0] === "0" && !isNaN(currentValue[1])) {
-    currentValue = currentValue[currentValue.length - 1];
-    displayValue = "";
+  if (!operator) {
+    if (firstNum[0] === "0" && !isNaN(e.target.innerText)) {
+      firstNum = e.target.innerText;
+    } else {
+      firstNum += e.target.innerText;
+    }
+    display.innerText = firstNum;
+  } else if (operator) {
+    secondNum += e.target.innerText;
+    display.innerText = firstNum + operator + secondNum;
   }
-
-  if (regex.test(currentValue)) {
-    displayValue += incomingNumber;
-  }
-
-  showResult();
 };
 
 const handleDecimal = (e) => {
-  const incomingDecimal = e.target.innerText;
-  currentValue = displayValue + incomingDecimal;
-  if (regex.test(currentValue)) {
-    displayValue += incomingDecimal;
+  if (!operator) {
+    const decimals = Array.from(firstNum).filter((char) => char === ".");
+    if (decimals.length < 1) {
+      firstNum += e.target.innerText;
+      display.innerText = firstNum;
+    }
+  } else if (operator) {
+    const decimals = Array.from(secondNum).filter((char) => char === ".");
+    if (decimals.length < 1) {
+      secondNum += e.target.innerText;
+      display.innerText = firstNum + operator + secondNum;
+    }
   }
+};
 
-  showResult();
+const handleSign = (e) => {
+  if (!firstNum) {
+    firstNum = e.target.innerText[e.target.innerText.length - 1];
+    display.innerText = firstNum;
+  } else if (!secondNum && operator) {
+    secondNum = e.target.innerText[e.target.innerText.length - 1];
+    display.innerText = firstNum + operator + secondNum;
+  }
 };
 
 const fitCharInScreen = () => {
+  const displayValue = firstNum + operator + secondNum;
   if (displayValue.length <= 8) {
     display.style.fontSize = initialDigitSize;
   } else if (displayValue.length in fontSizeMap) {
@@ -200,58 +164,54 @@ const fitCharInScreen = () => {
 };
 
 const calculate = () => {
-  if (displayValue === "") {
-    return;
-  }
-
-  const operatorIndex = getOperatorIndex();
-  const displayValueParts = getDisplayValueParts(operatorIndex);
-  const { firstNum, secondNum, operator } = displayValueParts;
-
-  if (!isNaN(firstNum) && !isNaN(secondNum) && isNaN(operator)) {
+  if (firstNum && secondNum && operator) {
+    let outcome;
     switch (operator) {
       case "+":
-        displayValue = add(+firstNum, +secondNum).toString();
+        outcome = add(+firstNum, +secondNum).toString();
         break;
       case "-":
-        displayValue = subtract(+firstNum, +secondNum).toString();
+        outcome = subtract(+firstNum, +secondNum).toString();
         break;
       case "x":
-        displayValue = multiply(+firstNum, +secondNum).toString();
+        outcome = multiply(+firstNum, +secondNum).toString();
         break;
       case "\u00F7":
-        displayValue = divide(+firstNum, +secondNum).toString();
+        outcome = divide(+firstNum, +secondNum).toString();
         break;
     }
-  }
 
-  showResult();
+    display.innerText = outcome;
+    firstNum = outcome;
+    operator = "";
+    secondNum = "";
+  }
 };
 
 const reset = () => {
-  clearDisplay();
-  displayValue = "";
-  currentValue = "";
-};
-
-const clearDisplay = () => {
   display.innerText = 0;
-};
-
-const showResult = () => {
-  display.innerText = displayValue;
+  firstNum = "";
+  operator = "";
+  secondNum = "";
 };
 
 const undo = () => {
-  const currentValueArray = currentValue.split("");
-  currentValueArray.pop();
-  currentValue = currentValueArray.join("");
-  if (currentValue === "") {
+  if (!firstNum || firstNum.length === 1) {
+    firstNum = "";
     reset();
-  } else {
-    displayValue = currentValueArray.join("");
-
-    showResult();
+  } else if (!operator) {
+    const displayValueArray = firstNum.split("");
+    displayValueArray.pop();
+    firstNum = displayValueArray.join("");
+    display.innerText = firstNum;
+  } else if (operator && !secondNum) {
+    operator = "";
+    display.innerText = firstNum;
+  } else if (secondNum) {
+    const displayValueArray = secondNum.split("");
+    displayValueArray.pop();
+    secondNum = displayValueArray.join("");
+    display.innerText = firstNum + operator + secondNum;
   }
 };
 
