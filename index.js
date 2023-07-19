@@ -59,7 +59,7 @@ const add = (x, y) => {
   if (!isDecimal(x) && !isDecimal(y)) {
     return x + y;
   } else {
-    return parseFloat((x + y).toFixed(4));
+    return (x + y).toFixed(4);
   }
 };
 
@@ -67,7 +67,7 @@ const subtract = (x, y) => {
   if (!isDecimal(x) && !isDecimal(y)) {
     return x - y;
   } else {
-    return parseFloat((x - y).toFixed(4));
+    return (x - y).toFixed(4);
   }
 };
 
@@ -75,7 +75,7 @@ const multiply = (x, y) => {
   if (!isDecimal(x) && !isDecimal(y)) {
     return x * y;
   } else {
-    return parseFloat((x * y).toFixed(4));
+    return (x * y).toFixed(4);
   }
 };
 
@@ -85,7 +85,7 @@ const divide = (x, y) => {
   } else if (!isDecimal(x) && !isDecimal(y)) {
     return x / y;
   } else {
-    return parseFloat((x / y).toFixed(4));
+    return (x / y).toFixed(4);
   }
 };
 
@@ -101,10 +101,35 @@ const handleButton = (e) => {
   }
 };
 
+const checkLastCharforDecimal = (num) => {
+  return num[num.length - 1] === ".";
+};
+
+const removeTrailingDecimals = () => {
+  let lastCharisDecimal;
+  // We are on the first number
+  if (!operator) {
+    lastCharisDecimal = checkLastCharforDecimal(firstNum);
+    if (lastCharisDecimal) {
+      firstNum = removeLastChar(firstNum);
+    }
+    // We are on the second number
+  } else if (operator) {
+    lastCharisDecimal = checkLastCharforDecimal(secondNum);
+    if (lastCharisDecimal) {
+      secondNum = removeLastChar(secondNum);
+    }
+  }
+};
+
 const handleOperator = (e) => {
+  removeTrailingDecimals();
+
+  // We are calculating a single expression with the equal button
   if (!isNaN(firstNum) && firstNum !== "" && !operator) {
     operator = e.target.innerText;
     display.innerText = firstNum + operator;
+    // We are doing a rolling calculation with an operator
   } else if (firstNum && operator && !isNaN(secondNum) && secondNum !== "") {
     calculate();
     operator = e.target.innerText;
@@ -112,42 +137,61 @@ const handleOperator = (e) => {
   }
 };
 
+const checkLeadingZeroes = (num, e) => {
+  return num[0] === "0" && num[1] !== "." && !isNaN(e.target.innerText);
+};
+
+const buildNumber = (num, e) => {
+  const leadingZeroesExist = checkLeadingZeroes(num, e);
+  if (leadingZeroesExist) {
+    num = e.target.innerText;
+    return num;
+  } else {
+    num += e.target.innerText;
+    return num;
+  }
+};
+
 const handleNumber = (e) => {
+  // We are on the first number
   if (!operator) {
-    if (firstNum[0] === "0" && !isNaN(e.target.innerText)) {
-      firstNum = e.target.innerText;
-    } else {
-      firstNum += e.target.innerText;
-    }
+    firstNum = buildNumber(firstNum, e);
     display.innerText = firstNum;
+    // We are on the second number
   } else if (operator) {
-    secondNum += e.target.innerText;
+    secondNum = buildNumber(secondNum, e);
     display.innerText = firstNum + operator + secondNum;
   }
 };
 
+const findDecimals = (num) => {
+  return !Array.from(num).includes(".");
+};
+
 const handleDecimal = (e) => {
+  // We are on the first number
   if (!operator) {
-    const decimals = Array.from(firstNum).filter((char) => char === ".");
-    if (decimals.length < 1) {
+    const decimalDoesntExist = findDecimals(firstNum);
+    if (decimalDoesntExist) {
       firstNum += e.target.innerText;
       display.innerText = firstNum;
     }
+    // We are on the second number
   } else if (operator) {
-    const decimals = Array.from(secondNum).filter((char) => char === ".");
-    if (decimals.length < 1) {
+    const decimalDoesntExist = findDecimals(secondNum);
+    if (decimalDoesntExist) {
       secondNum += e.target.innerText;
       display.innerText = firstNum + operator + secondNum;
     }
   }
 };
 
-const handleSign = (e) => {
+const handleSign = () => {
   if (!firstNum) {
-    firstNum = e.target.innerText[e.target.innerText.length - 1];
+    firstNum = "-";
     display.innerText = firstNum;
-  } else if (!secondNum && operator) {
-    secondNum = e.target.innerText[e.target.innerText.length - 1];
+  } else if (operator && !secondNum) {
+    secondNum = "-";
     display.innerText = firstNum + operator + secondNum;
   }
 };
@@ -195,22 +239,24 @@ const reset = () => {
   secondNum = "";
 };
 
+const removeLastChar = (num) => {
+  const numArray = num.split("");
+  numArray.pop();
+  return numArray.join("");
+};
+
 const undo = () => {
   if (!firstNum || firstNum.length === 1) {
     firstNum = "";
     reset();
   } else if (!operator) {
-    const displayValueArray = firstNum.split("");
-    displayValueArray.pop();
-    firstNum = displayValueArray.join("");
+    firstNum = removeLastChar(firstNum);
     display.innerText = firstNum;
   } else if (operator && !secondNum) {
     operator = "";
     display.innerText = firstNum;
   } else if (secondNum) {
-    const displayValueArray = secondNum.split("");
-    displayValueArray.pop();
-    secondNum = displayValueArray.join("");
+    secondNum = removeLastChar(secondNum);
     display.innerText = firstNum + operator + secondNum;
   }
 };
