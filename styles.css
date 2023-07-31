@@ -12,13 +12,28 @@ body {
 body {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
   min-height: 100vh;
   gap: 4rem;
   padding: 0 1rem 1rem 0;
-  background: url("marble.jpeg") no-repeat;
-  background-size: cover;
+  background: linear-gradient(
+    90deg,
+    hsla(177, 87%, 79%, 1) 0%,
+    hsla(235, 89%, 70%, 1) 100%
+  );
+
+  background: -moz-linear-gradient(
+    90deg,
+    hsla(177, 87%, 79%, 1) 0%,
+    hsla(235, 89%, 70%, 1) 100%
+  );
+
+  background: -webkit-linear-gradient(
+    90deg,
+    hsla(177, 87%, 79%, 1) 0%,
+    hsla(235, 89%, 70%, 1) 100%
+  );
 }
 
 .credit {
